@@ -8,10 +8,10 @@ package pe.com.siprede.controller;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.RequestScoped;
+import javax.faces.context.FacesContext;
+import javax.servlet.ServletContext;
 import org.encog.Encog;
-import org.encog.ml.data.MLDataPair;
 import org.encog.ml.data.MLDataSet;
-import org.encog.ml.data.basic.BasicMLDataPair;
 import org.encog.neural.networks.training.propagation.back.Backpropagation;
 import pe.com.siprede.model.Demanda;
 import pe.com.siprede.util.Normalizacion;
@@ -64,18 +64,26 @@ public class DemandaForm {
     }
     
     public void predecir() {
+        FacesContext ctx = FacesContext.getCurrentInstance();
+        String relativeWebPath = "/resources/csv/";
+        ServletContext servletContext = (ServletContext) ctx.getExternalContext().getContext();
+        String absoluteDiskPath = servletContext.getRealPath(relativeWebPath);
+        
+        // Inicializar la red neuronal
         this.predictorBean.crearPredictor(9, 2, 1);
         // Normalizar patrones de entrenamiento desde un archivo .csv
         Normalizacion normEntrenamiento = new Normalizacion();
-        normEntrenamiento.normalizarDataArchivoCSV("H:\\NetbeansJavaWeb\\SIPREDE\\csv\\data_entrenamiento.csv", "H:\\NetbeansJavaWeb\\SIPREDE\\csv\\data_entrenamiento_norm.csv");
+        normEntrenamiento.normalizarDataArchivoCSV(absoluteDiskPath + "\\data_entrenamiento.csv",
+                absoluteDiskPath + "\\data_entrenamiento_norm.csv");
         // Crear el conjunto de data de entrenamiento
         MLDataSet conjuntoEntrenamiento = this.predictorBean.crearConjuntoDataEntrenamiento(
                 normEntrenamiento.getArchivoDestino().getAbsolutePath(), false);
         // Entrenar la red neuronal mediante el algoritmo BP
-        Backpropagation bp = this.predictorBean.entrenarRedNeuronal(conjuntoEntrenamiento, 0.7, 0, 0.03);
+        Backpropagation bp = this.predictorBean.entrenarRedNeuronal(conjuntoEntrenamiento, 0.5, 0.25, 0.02);
         // Normalizar patrones de validacion desde un archivo .csv
         Normalizacion normValidacion = new Normalizacion();
-        normValidacion.normalizarDataArchivoCSV("H:\\NetbeansJavaWeb\\SIPREDE\\csv\\data_validacion.csv", "H:\\NetbeansJavaWeb\\SIPREDE\\csv\\data_validacion_norm.csv");
+        normValidacion.normalizarDataArchivoCSV(absoluteDiskPath + "\\data_validacion.csv",
+                absoluteDiskPath + "\\data_validacion_norm.csv");
         // Crear el conjunto de data de validacion
         MLDataSet conjuntoValidacion = this.predictorBean.crearConjuntoDataValidacion(
                 normValidacion.getArchivoDestino().getAbsolutePath(), false);
