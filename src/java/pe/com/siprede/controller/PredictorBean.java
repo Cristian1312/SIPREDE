@@ -108,8 +108,6 @@ public class PredictorBean {
     public void validarRedNeuronal(MLDataSet dataValidacion) {
         for (MLDataPair pair : dataValidacion) {
             final MLData output = this.predictor.getPerceptronML().compute(pair.getInput());
-            System.out.print("y = " + Numero.redondear(output.getData(0), 4));
-            System.out.println();
         }
     }
 }

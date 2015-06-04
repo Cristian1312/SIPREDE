@@ -11,7 +11,10 @@ import javax.faces.bean.RequestScoped;
 import javax.faces.context.FacesContext;
 import javax.servlet.ServletContext;
 import org.encog.Encog;
+import org.encog.ml.data.MLData;
+import org.encog.ml.data.MLDataPair;
 import org.encog.ml.data.MLDataSet;
+import org.encog.ml.data.basic.BasicMLDataSet;
 import org.encog.neural.networks.training.propagation.back.Backpropagation;
 import pe.com.siprede.model.Demanda;
 import pe.com.siprede.util.Normalizacion;
@@ -90,11 +93,27 @@ public class DemandaForm {
         // Validar la red neuronal
         this.predictorBean.validarRedNeuronal(conjuntoValidacion);
         
-        double[] inputData = {0.09090909090909091,0.24781341107871713,0,0,1,0.14473684210526283,0,0,1};
-        //conjuntoValidacion.add(null);
+        double[][] inputData = {
+            {demanda.getMes(),
+                demanda.getPrecioProducto(),
+                demanda.getPromocion(),
+                demanda.getTiempoPromocion(),
+                demanda.getPublicidad(),
+                demanda.getPrecioProductoC(),
+                demanda.getPromocionC(),
+                demanda.getTiempoPromocionC(),
+                demanda.getPublicidadC()}
+        };
         
-        System.out.println(conjuntoValidacion.getInputSize());
-        System.out.println(this.predictorBean.getPredictor().getPerceptronML().calculateError(conjuntoValidacion));
+        double[][] outputData = {{0}};
+        
+        MLDataSet conjuntoParaPredecir = new BasicMLDataSet(inputData, outputData);
+        
+        for(MLDataPair patron: conjuntoParaPredecir) {
+            final MLData prediccion = this.predictorBean.getPredictor().getPerceptronML().compute(patron.getInput());
+            System.out.println("SALIDA DE LA RED: " + prediccion.getData(0));
+        }
+        
         Encog.getInstance().shutdown();
     }
 }
