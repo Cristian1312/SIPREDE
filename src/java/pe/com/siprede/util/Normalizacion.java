@@ -61,7 +61,7 @@ public class Normalizacion {
             normalize.addInputField(inputPC = new InputFieldCSV(true, archivoOrigen, 6));
             normalize.addInputField(inputTPC = new InputFieldCSV(true, archivoOrigen, 7));
             normalize.addInputField(inputPUC = new InputFieldCSV(true, archivoOrigen, 8));
-            normalize.addInputField(inputY = new InputFieldCSV(true, archivoOrigen, 9));
+            normalize.addInputField(inputY = new InputFieldCSV(false, archivoOrigen, 9));
             
             // Definir cuales variables se deberian normalizar
             normalize.addOutputField(new OutputFieldRangeMapped(inputM, 0, 1));

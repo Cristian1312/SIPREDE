@@ -109,10 +109,14 @@ public class DemandaForm {
         
         MLDataSet conjuntoParaPredecir = new BasicMLDataSet(inputData, outputData);
         
+        double cantidadDemandada = 0.0;
+        
         for(MLDataPair patron: conjuntoParaPredecir) {
             final MLData prediccion = this.predictorBean.getPredictor().getPerceptronML().compute(patron.getInput());
-            System.out.println("SALIDA DE LA RED: " + prediccion.getData(0));
+            cantidadDemandada = prediccion.getData(0);
         }
+        
+        System.out.println("SALIDA DE LA RED: " + cantidadDemandada);
         
         Encog.getInstance().shutdown();
     }
