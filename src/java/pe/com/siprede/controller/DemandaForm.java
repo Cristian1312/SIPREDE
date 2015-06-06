@@ -94,29 +94,31 @@ public class DemandaForm {
         this.predictorBean.validarRedNeuronal(conjuntoValidacion);
         
         double[][] inputData = {
-            {demanda.getMes(),
-                demanda.getPrecioProducto(),
-                demanda.getPromocion(),
-                demanda.getTiempoPromocion(),
-                demanda.getPublicidad(),
-                demanda.getPrecioProductoC(),
-                demanda.getPromocionC(),
-                demanda.getTiempoPromocionC(),
-                demanda.getPublicidadC()}
+            {Double.parseDouble(demanda.getMes()),
+                Double.parseDouble(demanda.getPrecioProducto()),
+                Double.parseDouble(demanda.getPromocion()),
+                Double.parseDouble(demanda.getTiempoPromocion()),
+                Double.parseDouble(demanda.getPublicidad()),
+                Double.parseDouble(demanda.getPrecioProductoC()),
+                Double.parseDouble(demanda.getPromocionC()),
+                Double.parseDouble(demanda.getTiempoPromocionC()),
+                Double.parseDouble(demanda.getPublicidadC())}
         };
         
         double[][] outputData = {{0}};
         
         MLDataSet conjuntoParaPredecir = new BasicMLDataSet(inputData, outputData);
         
-        double cantidadDemandada = 0.0;
+        String cantidadDemandada = "";
         
         for(MLDataPair patron: conjuntoParaPredecir) {
             final MLData prediccion = this.predictorBean.getPredictor().getPerceptronML().compute(patron.getInput());
-            cantidadDemandada = prediccion.getData(0);
+            cantidadDemandada = String.valueOf(prediccion.getData(0));
         }
         
         System.out.println("SALIDA DE LA RED: " + cantidadDemandada);
+        
+        demanda.setCantidadDemandada(cantidadDemandada);
         
         Encog.getInstance().shutdown();
     }

@@ -28,7 +28,7 @@
             </div>
         </nav>
 
-        <div class="panel panel-default" style="width: 600px; margin: auto;">
+        <div class="panel panel-default" style="width: 620px; margin: auto;">
             <div class="panel-heading">
                 <h3 class="panel-title"><b>Predicción de la cantidad demandada del producto</b></h3>
             </div>
@@ -80,7 +80,10 @@
                     <div class="form-group">
                         <p:outputLabel for="tiempoPromocion" value="Tiempo de la promoción" class="control-label col-xs-4" />
                         <div class="col-xs-8">
-                            <p:spinner id="tiempoPromocion" value="#{demanda.tiempoPromocion}" min="1" max="7" />
+                            <h:outputText id="output" value="N° de días: #{demanda.tiempoPromocion}" class="control-label" />
+                            <h:inputHidden id="tiempoPromocion" value="#{demanda.tiempoPromocion}" />
+                            <p:slider for="tiempoPromocion" display="output" style="width: 382px" displayTemplate="N° de días: {value}"
+                                      minValue="1" maxValue="7" />
                         </div>
                     </div>
                     <div class="form-group">
@@ -118,7 +121,10 @@
                     <div class="form-group">
                         <p:outputLabel for="tiempoPromocionC" value="Tiempo de la promoción" class="control-label col-xs-4" />
                         <div class="col-xs-8">
-                            <p:spinner id="tiempoPromocionC" value="#{demanda.tiempoPromocionC}" min="1" max="7" />
+                            <h:outputText id="output2" value="N° de días: #{demanda.tiempoPromocionC}" class="control-label" />
+                            <h:inputHidden id="tiempoPromocionC" value="#{demanda.tiempoPromocionC}" />
+                            <p:slider for="tiempoPromocionC" display="output2" style="width: 382px" displayTemplate="N° de días: {value}"
+                                      minValue="1" maxValue="7" />
                         </div>
                     </div>
                     <div class="form-group">
@@ -134,13 +140,13 @@
                     <div class="form-group">
                         <div class="col-xs-offset-2 col-xs-10">
                             <p:commandButton value="Predecir" actionListener="#{demandaForm.predecir}"
-                                             class="btn btn-primary" update="growl" />
+                                             class="btn btn-primary" update="growl, display" />
                         </div>
                     </div>
+                    <h:outputText id="display" value="#{demanda.cantidadDemandada}" />
                 </h:form>
             </div>
         </div>
-        <p:outputLabel value="#{demanda.cantidadDemandada}" class="control-label col-xs-4" />
         <hr/>
         <div id="footer" style="height: 40px;">
             <div class="container">
