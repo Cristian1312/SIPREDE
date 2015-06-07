@@ -26,6 +26,8 @@ public class Demanda {
     private String tiempoPromocionC;
     private String publicidadC;
     private String cantidadDemandada;
+    
+    private String mensajeFinal;
     /**
      * Creates a new instance of Demanda
      */
@@ -170,5 +172,19 @@ public class Demanda {
      */
     public void setCantidadDemandada(String cantidadDemandada) {
         this.cantidadDemandada = cantidadDemandada;
+    }
+
+    /**
+     * @return the mensajeFinal
+     */
+    public String getMensajeFinal() {
+        return mensajeFinal;
+    }
+
+    /**
+     * @param mensajeFinal the mensajeFinal to set
+     */
+    public void setMensajeFinal(String mensajeFinal) {
+        this.mensajeFinal = mensajeFinal;
     }
 }

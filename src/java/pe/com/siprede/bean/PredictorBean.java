@@ -3,21 +3,24 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package pe.com.siprede.controller;
+package pe.com.siprede.bean;
 
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.RequestScoped;
+import org.encog.Encog;
 import org.encog.engine.network.activation.ActivationSigmoid;
 import org.encog.ml.data.MLData;
 import org.encog.ml.data.MLDataPair;
 import org.encog.ml.data.MLDataSet;
+import org.encog.ml.data.basic.BasicMLDataSet;
 import org.encog.neural.networks.layers.BasicLayer;
 import org.encog.neural.networks.training.propagation.back.Backpropagation;
 import org.encog.util.csv.CSVFormat;
 import org.encog.util.simple.TrainingSetUtil;
+import pe.com.siprede.model.Demanda;
 import pe.com.siprede.model.Predictor;
-import pe.com.siprede.util.Numero;
+import pe.com.siprede.util.Mes;
 
 /**
  *
@@ -80,20 +83,6 @@ public class PredictorBean {
         
         return bp;
     }
-    
-    public void mostrarPesos() {
-        for (int i = 1; i < this.predictor.getPerceptronML().getLayerCount(); i++) {
-            System.out.println("        Capa " + (i + 1) + ":");
-            for (int j = 0; j < this.predictor.getPerceptronML().getLayerNeuronCount(i); j++) {
-                System.out.println("            Neurona " + (j + 1) + ":");
-                for (int k = 0; k < this.predictor.getPerceptronML().getLayerNeuronCount(i - 1); k++) {
-                    System.out.println("                "
-                            + "Peso(" + (j + 1) + "," + (k + 1) + "): " + Numero.
-                                    redondear(this.predictor.getPerceptronML().getWeight(i - 1, k, j), 4));
-                }
-            }
-        }
-    }
 
     public MLDataSet crearConjuntoDataValidacion(String rutaArchivo, boolean tieneHeaders) {
         int nroDeEntradas = this.predictor.getPerceptronML().getInputCount();
@@ -109,5 +98,29 @@ public class PredictorBean {
         for (MLDataPair pair : dataValidacion) {
             final MLData output = this.predictor.getPerceptronML().compute(pair.getInput());
         }
+        Encog.getInstance().shutdown();
+    }
+    
+    public void elaborarPrediccion(Demanda demanda) {
+        double[][] inputData = {
+            {Double.parseDouble(demanda.getMes()), Double.parseDouble(demanda.getPrecioProducto()),
+                Double.parseDouble(demanda.getPromocion()), Double.parseDouble(demanda.getTiempoPromocion()),
+                Double.parseDouble(demanda.getPublicidad()), Double.parseDouble(demanda.getPrecioProductoC()),
+                Double.parseDouble(demanda.getPromocionC()),  Double.parseDouble(demanda.getTiempoPromocionC()),
+                Double.parseDouble(demanda.getPublicidadC())}
+        };
+        double[][] outputData = {{0}};
+        MLDataSet conjuntoParaPredecir = new BasicMLDataSet(inputData, outputData);
+        String cantidadDemandada = "";
+        
+        for(MLDataPair patron: conjuntoParaPredecir) {
+            final MLData prediccion = getPredictor().getPerceptronML().compute(patron.getInput());
+            cantidadDemandada = String.valueOf(prediccion.getData(0));
+        }
+        demanda.setCantidadDemandada(cantidadDemandada);
+        String msgFinal = "La cantidad demandada para el mes de " +
+                Mes.getNombreMes(demanda.getMes()) + " es " +
+                demanda.getCantidadDemandada();
+        demanda.setMensajeFinal(msgFinal);
     }
 }
