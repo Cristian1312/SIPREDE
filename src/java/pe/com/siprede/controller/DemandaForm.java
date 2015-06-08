@@ -5,18 +5,15 @@
  */
 package pe.com.siprede.controller;
 
+import java.io.Serializable;
+import javax.annotation.PostConstruct;
 import pe.com.siprede.bean.PredictorBean;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.RequestScoped;
-import org.encog.Encog;
-import org.encog.ml.data.MLData;
-import org.encog.ml.data.MLDataPair;
 import org.encog.ml.data.MLDataSet;
-import org.encog.ml.data.basic.BasicMLDataSet;
 import org.encog.neural.networks.training.propagation.back.Backpropagation;
 import pe.com.siprede.model.Demanda;
-import pe.com.siprede.util.Mes;
 import pe.com.siprede.util.Normalizacion;
 import pe.com.siprede.util.Ruta;
 
@@ -26,7 +23,7 @@ import pe.com.siprede.util.Ruta;
  */
 @ManagedBean
 @RequestScoped
-public class DemandaForm {
+public class DemandaForm implements Serializable {
 
     /**
      * Creates a new instance of DemandaForm
@@ -38,6 +35,14 @@ public class DemandaForm {
     private Demanda demanda;
     @ManagedProperty(value = "#{predictorBean}")
     private PredictorBean predictorBean;
+    private boolean disableSliderTiempoPromocion;
+    private boolean disableSliderTiempoPromocionC;
+    
+    @PostConstruct
+    public void init() {
+        this.disableSliderTiempoPromocion = false;
+        this.setDisableSliderTiempoPromocionC(false);
+    }
 
     /**
      * @return the demanda
@@ -65,6 +70,47 @@ public class DemandaForm {
      */
     public void setPredictorBean(PredictorBean predictorBean) {
         this.predictorBean = predictorBean;
+    }
+    
+    /**
+     * @return the disableSliderTiempoPromocion
+     */
+    public boolean isDisableSliderTiempoPromocion() {
+        return disableSliderTiempoPromocion;
+    }
+
+    /**
+     * @param disableSliderTiempoPromocion the disableSliderTiempoPromocion to set
+     */
+    public void setDisableSliderTiempoPromocion(boolean disableSliderTiempoPromocion) {
+        this.disableSliderTiempoPromocion = disableSliderTiempoPromocion;
+    }
+    /**
+     * @return the disableSliderTiempoPromocionC
+     */
+    public boolean isDisableSliderTiempoPromocionC() {
+        return disableSliderTiempoPromocionC;
+    }
+
+    /**
+     * @param disableSliderTiempoPromocionC the disableSliderTiempoPromocionC to set
+     */
+    public void setDisableSliderTiempoPromocionC(boolean disableSliderTiempoPromocionC) {
+        this.disableSliderTiempoPromocionC = disableSliderTiempoPromocionC;
+    }
+    
+    public void onPromocionChange() {
+        if (demanda.getPromocion().equals("0")) {
+            demanda.setTiempoPromocion("0.0");
+            setDisableSliderTiempoPromocion(true);
+        }
+    }
+    
+    public void onPromocionCompChange() {
+        if (demanda.getPromocionC().equals("0")) {
+            demanda.setTiempoPromocionC("0.0");
+            setDisableSliderTiempoPromocionC(true);
+        }
     }
     
     public void predecir() {
