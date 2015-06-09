@@ -6,15 +6,22 @@
 package pe.com.siprede.controller;
 
 import java.io.Serializable;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javax.annotation.PostConstruct;
+import javax.faces.application.FacesMessage;
 import pe.com.siprede.bean.PredictorBean;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.RequestScoped;
+import javax.faces.component.UIComponent;
+import javax.faces.context.FacesContext;
+import javax.faces.validator.ValidatorException;
 import org.encog.ml.data.MLDataSet;
 import org.encog.neural.networks.training.propagation.back.Backpropagation;
 import pe.com.siprede.model.Demanda;
 import pe.com.siprede.util.Normalizacion;
+import pe.com.siprede.util.Numero;
 import pe.com.siprede.util.Ruta;
 
 /**
@@ -30,14 +37,14 @@ public class DemandaForm implements Serializable {
      */
     public DemandaForm() {
     }
-    
+
     @ManagedProperty(value = "#{demanda}")
     private Demanda demanda;
     @ManagedProperty(value = "#{predictorBean}")
     private PredictorBean predictorBean;
     private boolean disableSliderTiempoPromocion;
     private boolean disableSliderTiempoPromocionC;
-    
+
     @PostConstruct
     public void init() {
         this.disableSliderTiempoPromocion = false;
@@ -71,7 +78,7 @@ public class DemandaForm implements Serializable {
     public void setPredictorBean(PredictorBean predictorBean) {
         this.predictorBean = predictorBean;
     }
-    
+
     /**
      * @return the disableSliderTiempoPromocion
      */
@@ -80,11 +87,13 @@ public class DemandaForm implements Serializable {
     }
 
     /**
-     * @param disableSliderTiempoPromocion the disableSliderTiempoPromocion to set
+     * @param disableSliderTiempoPromocion the disableSliderTiempoPromocion to
+     * set
      */
     public void setDisableSliderTiempoPromocion(boolean disableSliderTiempoPromocion) {
         this.disableSliderTiempoPromocion = disableSliderTiempoPromocion;
     }
+
     /**
      * @return the disableSliderTiempoPromocionC
      */
@@ -93,26 +102,49 @@ public class DemandaForm implements Serializable {
     }
 
     /**
-     * @param disableSliderTiempoPromocionC the disableSliderTiempoPromocionC to set
+     * @param disableSliderTiempoPromocionC the disableSliderTiempoPromocionC to
+     * set
      */
     public void setDisableSliderTiempoPromocionC(boolean disableSliderTiempoPromocionC) {
         this.disableSliderTiempoPromocionC = disableSliderTiempoPromocionC;
     }
-    
+
     public void onPromocionChange() {
         if (demanda.getPromocion().equals("0")) {
             demanda.setTiempoPromocion("0.0");
             setDisableSliderTiempoPromocion(true);
         }
     }
-    
+
     public void onPromocionCompChange() {
         if (demanda.getPromocionC().equals("0")) {
             demanda.setTiempoPromocionC("0.0");
             setDisableSliderTiempoPromocionC(true);
         }
     }
+
+    public void validarPrecio(FacesContext arg0, UIComponent arg1, Object arg2)
+            throws ValidatorException {
+        Pattern patron = Pattern.compile("\\d+(\\.\\d{2})?");
+        Matcher match = patron.matcher((String) arg2);
+        if (!match.matches()) {
+            throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, 
+                    "Precio inválido", "Debe ser numérico. No debe contener comas. "
+                            + "Solo 2 cifras decimales."));
+        }
+    }
     
+    public void validarPrecioC(FacesContext arg0, UIComponent arg1, Object arg2)
+            throws ValidatorException {
+        Pattern patron = Pattern.compile("\\d+(\\.\\d{2})?");
+        Matcher match = patron.matcher((String) arg2);
+        if (!match.matches()) {
+            throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, 
+                    "Precio de la competencia inválido", "Debe ser numérico. No "
+                            + "debe contener comas. Solo 2 cifras decimales."));
+        }
+    }
+
     public void predecir() {
         String rutaAbsoluta = Ruta.getRuta();
         // Inicializar la red neuronal
