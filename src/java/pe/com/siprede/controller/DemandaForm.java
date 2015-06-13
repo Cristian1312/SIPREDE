@@ -21,7 +21,6 @@ import org.encog.ml.data.MLDataSet;
 import org.encog.neural.networks.training.propagation.back.Backpropagation;
 import pe.com.siprede.model.Demanda;
 import pe.com.siprede.util.Normalizacion;
-import pe.com.siprede.util.Numero;
 import pe.com.siprede.util.Ruta;
 
 /**

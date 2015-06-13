@@ -123,7 +123,7 @@ public class PredictorBean {
             }
             demanda.setCantidadDemandada(cantidadDemandada);
             String msgFinal = "La cantidad demandada para el mes de " +
-                    Mes.getNombreMes(demanda.getMes()) + " es de " +
+                    Mes.getNombreMes(demanda.getMes()) + " será de " +
                     Numero.desnormalizar(demanda.getCantidadDemandada(), 1, 0, 16643, 2090) + 
                     " unidades.";
             msg = new FacesMessage("Exito!", msgFinal);
