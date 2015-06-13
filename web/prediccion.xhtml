@@ -146,15 +146,11 @@
                     <div class="form-group">
                         <div class="col-xs-offset-2 col-xs-10">
                             <p:commandButton value="Predecir" actionListener="#{demandaForm.predecir}"
-                                    class="btn btn-primary" update="growl, display" onclick="PF('dlg').show();" />
+                                    class="btn btn-primary" update="growl" />
                             <p:message for="precioProducto" />
                             <p:message for="precioProductoC" />
                         </div>
                     </div>
-                    <p:dialog header="Exito!!!" widgetVar="dlg" modal="true" width="300"
-                              height="50" resizable="false">
-                        <h:outputText id="display" value="#{demanda.mensajeFinal}" />
-                    </p:dialog> 
                 </h:form>
             </div>
         </div>

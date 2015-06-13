@@ -5,9 +5,11 @@
  */
 package pe.com.siprede.bean;
 
+import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.RequestScoped;
+import javax.faces.context.FacesContext;
 import org.encog.Encog;
 import org.encog.engine.network.activation.ActivationSigmoid;
 import org.encog.ml.data.MLData;
@@ -102,6 +104,7 @@ public class PredictorBean {
     }
     
     public void elaborarPrediccion(Demanda demanda) {
+        FacesMessage msg = null;
         double[][] inputData = {
             {Double.parseDouble(demanda.getMes()), Double.parseDouble(demanda.getPrecioProducto()),
                 Double.parseDouble(demanda.getPromocion()), Double.parseDouble(demanda.getTiempoPromocion()),
@@ -110,17 +113,32 @@ public class PredictorBean {
                 Double.parseDouble(demanda.getPublicidadC())}
         };
         double[][] outputData = {{0}};
-        MLDataSet conjuntoParaPredecir = new BasicMLDataSet(inputData, outputData);
-        String cantidadDemandada = "";
-        
-        for(MLDataPair patron: conjuntoParaPredecir) {
-            final MLData prediccion = getPredictor().getPerceptronML().compute(patron.getInput());
-            cantidadDemandada = String.valueOf(prediccion.getData(0));
+        if (formularioSeEnvia(inputData)) {
+            MLDataSet conjuntoParaPredecir = new BasicMLDataSet(inputData, outputData);
+            String cantidadDemandada = "";
+            for(MLDataPair patron: conjuntoParaPredecir) {
+                final MLData prediccion = getPredictor().getPerceptronML().compute(patron.getInput());
+                cantidadDemandada = String.valueOf(prediccion.getData(0));
+            }
+            demanda.setCantidadDemandada(cantidadDemandada);
+            String msgFinal = "La cantidad demandada para el mes de " +
+                    Mes.getNombreMes(demanda.getMes()) + " es " +
+                    demanda.getCantidadDemandada();
+            msg = new FacesMessage("Exito!", msgFinal);
         }
-        demanda.setCantidadDemandada(cantidadDemandada);
-        String msgFinal = "La cantidad demandada para el mes de " +
-                Mes.getNombreMes(demanda.getMes()) + " es " +
-                demanda.getCantidadDemandada();
-        demanda.setMensajeFinal(msgFinal);
+        FacesContext.getCurrentInstance().addMessage(null, msg);
+    }
+    
+    public boolean formularioSeEnvia(double[][] entradas) {
+        boolean formularioSeEnvia = true;
+        
+        for (int i = 0; i < entradas[0].length; i++) {
+            if (String.valueOf(entradas[0][i]) == null) {
+                formularioSeEnvia = false;
+                break;
+            }
+        }
+        
+        return formularioSeEnvia;
     }
 }
