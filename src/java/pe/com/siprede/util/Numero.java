@@ -15,4 +15,14 @@ public class Numero {
         int cifras = (int) Math.pow(10, digitos);
         return Math.rint(numero * cifras) / cifras;
     }
+    
+    public static String desnormalizar(String valorNorm, double rmax, double rmin,
+            double dmax, double dmin) {
+        double vNorm = Double.parseDouble(valorNorm);
+        int vDesnorm;
+        
+        vDesnorm = (int) (((vNorm - rmin)/(rmax - rmin)*(dmax - dmin)) + dmin);
+        
+        return String.valueOf(vDesnorm);
+    }
 }
