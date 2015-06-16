@@ -20,8 +20,12 @@ import org.encog.util.normalize.target.NormalizationStorageCSV;
 public class Normalizacion {
     private File archivoOrigen;
     private File archivoDestino;
+    private InputField[] patrones;
+    private final DataNormalization normalize;
 
-    public Normalizacion() {}
+    public Normalizacion() {
+        normalize = new DataNormalization();
+    }
 
     public File getArchivoOrigen() {
         return archivoOrigen;
@@ -39,50 +43,65 @@ public class Normalizacion {
         this.archivoDestino = archivoDestino;
     }
     
+    public InputField[] getPatrones() {
+        return patrones;
+    }
+
+    public void setPatrones(InputField[] patrones) {
+        this.patrones = patrones;
+    }
+    
+    public void inicializarData() {
+        InputField inputM, inputPP, inputP, inputTP, inputPU, inputPPC, 
+                inputPC, inputTPC, inputPUC, inputY;
+        inputM = new InputFieldCSV(true, archivoOrigen, 0);
+        inputPP = new InputFieldCSV(true, archivoOrigen, 1);
+        inputP = new InputFieldCSV(true, archivoOrigen, 2);
+        inputTP = new InputFieldCSV(true, archivoOrigen, 3);
+        inputPU = new InputFieldCSV(true, archivoOrigen, 4);
+        inputPPC = new InputFieldCSV(true, archivoOrigen, 5);
+        inputPC = new InputFieldCSV(true, archivoOrigen, 6);
+        inputTPC = new InputFieldCSV(true, archivoOrigen, 7);
+        inputPUC = new InputFieldCSV(true, archivoOrigen, 8);
+        inputY = new InputFieldCSV(false, archivoOrigen, 9);
+        
+        patrones = new InputField[]{inputM, inputPP, inputP, inputTP, inputPU,
+            inputPPC, inputPC, inputTPC, inputPUC, inputY};
+    }
+    
+    public void agregarDataParaNormalizar() {
+        for (InputField patron : patrones) {
+            normalize.addInputField(patron);
+        }
+    }
+    
+    public void normalizarData() {
+        for (InputField patron : patrones) {
+            normalize.addOutputField(new OutputFieldRangeMapped(patron, 0, 1));
+        }
+    }
+    
     public void normalizarDataArchivoCSV(String rutaOrigen, String rutaDestino) {
         try {
             archivoOrigen = new File(rutaOrigen);
 
             if (!archivoOrigen.exists()) {
                 System.out.println("Archivo no existe!!!");
+            } else {
+                // Definir el formato del archivo .csv
+                inicializarData();
+                // Definir cuales variables se deberian normalizar
+                agregarDataParaNormalizar();
+                // Normalizacion de la data
+                normalizarData();
+                // Definir a que ruta deberia guardarse el archivo con la data normalizada
+                archivoDestino = new File(rutaDestino);
+                normalize.setCSVFormat(CSVFormat.ENGLISH);
+                normalize.setTarget(new NormalizationStorageCSV(CSVFormat.ENGLISH,
+                        archivoDestino));
+                //Proceso
+                normalize.process();
             }
-            
-            // Definir el formato del archivo .csv
-            DataNormalization normalize = new DataNormalization();
-            InputField inputM, inputPP, inputP, inputTP, inputPU, inputPPC,
-                    inputPC, inputTPC, inputPUC, inputY;
-            
-            normalize.addInputField(inputM = new InputFieldCSV(true, archivoOrigen, 0));
-            normalize.addInputField(inputPP = new InputFieldCSV(true, archivoOrigen, 1));
-            normalize.addInputField(inputP = new InputFieldCSV(true, archivoOrigen, 2));
-            normalize.addInputField(inputTP = new InputFieldCSV(true, archivoOrigen, 3));
-            normalize.addInputField(inputPU = new InputFieldCSV(true, archivoOrigen, 4));
-            normalize.addInputField(inputPPC = new InputFieldCSV(true, archivoOrigen, 5));
-            normalize.addInputField(inputPC = new InputFieldCSV(true, archivoOrigen, 6));
-            normalize.addInputField(inputTPC = new InputFieldCSV(true, archivoOrigen, 7));
-            normalize.addInputField(inputPUC = new InputFieldCSV(true, archivoOrigen, 8));
-            normalize.addInputField(inputY = new InputFieldCSV(false, archivoOrigen, 9));
-            
-            // Definir cuales variables se deberian normalizar
-            normalize.addOutputField(new OutputFieldRangeMapped(inputM, 0, 1));
-            normalize.addOutputField(new OutputFieldRangeMapped(inputPP, 0, 1));
-            normalize.addOutputField(new OutputFieldRangeMapped(inputP, 0, 1));
-            normalize.addOutputField(new OutputFieldRangeMapped(inputTP, 0, 1));
-            normalize.addOutputField(new OutputFieldRangeMapped(inputPU, 0, 1));
-            normalize.addOutputField(new OutputFieldRangeMapped(inputPPC, 0, 1));
-            normalize.addOutputField(new OutputFieldRangeMapped(inputPC, 0, 1));
-            normalize.addOutputField(new OutputFieldRangeMapped(inputTPC, 0, 1));
-            normalize.addOutputField(new OutputFieldRangeMapped(inputPUC, 0, 1));
-            normalize.addOutputField(new OutputFieldRangeMapped(inputY, 0, 1));
-            
-            // Definir a que ruta deberia guardarse el archivo con la data normalizada
-            archivoDestino = new File(rutaDestino);
-            normalize.setCSVFormat(CSVFormat.ENGLISH);
-            normalize.setTarget(new NormalizationStorageCSV(CSVFormat.ENGLISH, archivoDestino));
-            
-            //Proceso
-            normalize.process();
-            
         } catch (Exception ex) {
             ex.printStackTrace();
         }

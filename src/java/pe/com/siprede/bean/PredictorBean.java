@@ -101,7 +101,6 @@ public class PredictorBean {
         for (MLDataPair pair : dataValidacion) {
             final MLData output = this.predictor.getPerceptronML().compute(pair.getInput());
         }
-        Encog.getInstance().shutdown();
     }
     
     public void elaborarPrediccion(Demanda demanda) {
@@ -118,17 +117,18 @@ public class PredictorBean {
             MLDataSet conjuntoParaPredecir = new BasicMLDataSet(inputData, outputData);
             String cantidadDemandada = "";
             for(MLDataPair patron: conjuntoParaPredecir) {
-                final MLData prediccion = getPredictor().getPerceptronML().compute(patron.getInput());
+                final MLData prediccion = this.predictor.getPerceptronML().compute(patron.getInput());
                 cantidadDemandada = String.valueOf(prediccion.getData(0));
             }
             demanda.setCantidadDemandada(cantidadDemandada);
             String msgFinal = "La cantidad demandada para el mes de " +
                     Mes.getNombreMes(demanda.getMes()) + " será de " +
-                    Numero.desnormalizar(demanda.getCantidadDemandada(), 1, 0, 16643, 2090) + 
+                    Numero.desnormalizar(demanda.getCantidadDemandada(), 1, 0, 11812, 3297) + 
                     " unidades.";
             msg = new FacesMessage("Exito!", msgFinal);
         }
         FacesContext.getCurrentInstance().addMessage(null, msg);
+        Encog.getInstance().shutdown();
     }
     
     public boolean formularioSeEnvia(double[][] entradas) {
