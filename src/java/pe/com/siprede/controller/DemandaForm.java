@@ -167,6 +167,6 @@ public class DemandaForm implements Serializable {
         // Validar la red neuronal
         this.predictorBean.validarRedNeuronal(conjuntoValidacion);
         // Prediccion final
-        predictorBean.elaborarPrediccion(demanda);
+        predictorBean.elaborarPrediccion(demanda, normValidacion);
     }
 }

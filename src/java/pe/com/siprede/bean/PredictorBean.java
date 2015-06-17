@@ -23,6 +23,7 @@ import org.encog.util.simple.TrainingSetUtil;
 import pe.com.siprede.model.Demanda;
 import pe.com.siprede.model.Predictor;
 import pe.com.siprede.util.Mes;
+import pe.com.siprede.util.Normalizacion;
 import pe.com.siprede.util.Numero;
 
 /**
@@ -103,7 +104,7 @@ public class PredictorBean {
         }
     }
     
-    public void elaborarPrediccion(Demanda demanda) {
+    public void elaborarPrediccion(Demanda demanda, Normalizacion norm) {
         FacesMessage msg = null;
         double[][] inputData = {
             {Double.parseDouble(demanda.getMes()), Double.parseDouble(demanda.getPrecioProducto()),
@@ -112,6 +113,12 @@ public class PredictorBean {
                 Double.parseDouble(demanda.getPromocionC()),  Double.parseDouble(demanda.getTiempoPromocionC()),
                 Double.parseDouble(demanda.getPublicidadC())}
         };
+        
+        for (int i = 0; i < inputData[0].length; i++) {
+            inputData[0][i] = Numero.normalizar(inputData[0][i], 1, 0,
+                    norm.getPatrones()[i].getMax(), norm.getPatrones()[i].getMin());
+        }
+        
         double[][] outputData = {{0}};
         if (formularioSeEnvia(inputData)) {
             MLDataSet conjuntoParaPredecir = new BasicMLDataSet(inputData, outputData);
@@ -123,7 +130,8 @@ public class PredictorBean {
             demanda.setCantidadDemandada(cantidadDemandada);
             String msgFinal = "La cantidad demandada para el mes de " +
                     Mes.getNombreMes(demanda.getMes()) + " será de " +
-                    Numero.desnormalizar(demanda.getCantidadDemandada(), 1, 0, 11812, 3297) + 
+                    Numero.desnormalizar(demanda.getCantidadDemandada(), 1, 0,
+                            norm.getPatrones()[9].getMax(), norm.getPatrones()[9].getMin()) + 
                     " unidades.";
             msg = new FacesMessage("Exito!", msgFinal);
         }

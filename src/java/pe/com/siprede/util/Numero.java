@@ -25,4 +25,13 @@ public class Numero {
         
         return String.valueOf(vDesnorm);
     }
+    
+    public static double normalizar(double valorDesnorm, double rmax, double rmin,
+            double dmax, double dmin) {
+        double valorNorm;
+        
+        valorNorm = (((valorDesnorm - dmin)/(dmax - dmin))* (rmax - rmin)) + rmin;
+        
+        return valorNorm;
+    }
 }
